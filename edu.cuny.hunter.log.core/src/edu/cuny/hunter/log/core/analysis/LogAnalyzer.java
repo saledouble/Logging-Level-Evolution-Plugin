@@ -63,7 +63,7 @@ public class LogAnalyzer extends ASTVisitor {
 
 	private HashSet<Float> DOIValues = new HashSet<>();
 
-	private LinkedList<Float> boundary;
+	private LinkedList<Double> boundary;
 
 	/**
 	 * A set of keywords in log messages.
@@ -77,7 +77,7 @@ public class LogAnalyzer extends ASTVisitor {
 		this.test = isTest;
 	}
 
-	public LinkedList<Float> getBoundary() {
+	public LinkedList<Double> getBoundary() {
 		return this.boundary;
 	}
 
@@ -245,50 +245,51 @@ public class LogAnalyzer extends ASTVisitor {
 	 * @param DOI
 	 * @return the rejuvenated log level
 	 */
-	private Level getRejuvenatedLogLevel(LinkedList<Float> boundary, LogInvocation logInvocation) {
-		float DOI = logInvocation.getDegreeOfInterestValue();
+	private Level getRejuvenatedLogLevel(LinkedList<Double> boundary, LogInvocation logInvocation) {
 		if (boundary == null)
 			return null;
+		
+		double doiLogValue = Math.log(logInvocation.getDegreeOfInterestValue());
 
 		if (this.useLogCategory) {
 			LOGGER.info("Use log category: do not consider config/warning/severe.");
-			if (DOI >= boundary.get(0) && DOI < boundary.get(1))
+			if (doiLogValue >= boundary.get(0) && doiLogValue < boundary.get(1))
 				return Level.FINEST;
-			if (DOI < boundary.get(2))
+			if (doiLogValue < boundary.get(2))
 				return Level.FINER;
-			if (DOI < boundary.get(3))
+			if (doiLogValue < boundary.get(3))
 				return Level.FINE;
-			if (DOI <= boundary.get(4))
+			if (doiLogValue <= boundary.get(4))
 				return Level.INFO;
 		} else if (this.useLogCategoryWithConfig) {
 			LOGGER.info("Use log category: do not consider config.");
-			if (DOI >= boundary.get(0) && DOI < boundary.get(1))
+			if (doiLogValue >= boundary.get(0) && doiLogValue < boundary.get(1))
 				return Level.FINEST;
-			if (DOI < boundary.get(2))
+			if (doiLogValue < boundary.get(2))
 				return Level.FINER;
-			if (DOI < boundary.get(3))
+			if (doiLogValue < boundary.get(3))
 				return Level.FINE;
-			if (DOI < boundary.get(4))
+			if (doiLogValue < boundary.get(4))
 				return Level.INFO;
-			if (DOI < boundary.get(5))
+			if (doiLogValue < boundary.get(5))
 				return Level.WARNING;
-			if (DOI <= boundary.get(6))
+			if (doiLogValue <= boundary.get(6))
 				return Level.SEVERE;
 		} else {
 			LOGGER.info("Default log category.");
-			if (DOI >= boundary.get(0) && DOI < boundary.get(1))
+			if (doiLogValue >= boundary.get(0) && doiLogValue < boundary.get(1))
 				return Level.FINEST;
-			if (DOI < boundary.get(2))
+			if (doiLogValue < boundary.get(2))
 				return Level.FINER;
-			if (DOI < boundary.get(3))
+			if (doiLogValue < boundary.get(3))
 				return Level.FINE;
-			if (DOI < boundary.get(4))
+			if (doiLogValue < boundary.get(4))
 				return Level.CONFIG;
-			if (DOI < boundary.get(5))
+			if (doiLogValue < boundary.get(5))
 				return Level.INFO;
-			if (DOI < boundary.get(6))
+			if (doiLogValue < boundary.get(6))
 				return Level.WARNING;
-			if (DOI <= boundary.get(7))
+			if (doiLogValue <= boundary.get(7))
 				return Level.SEVERE;
 		}
 		return null;
@@ -301,17 +302,17 @@ public class LogAnalyzer extends ASTVisitor {
 	 * @param degreeOfInterests
 	 * @return a list of boundary
 	 */
-	private LinkedList<Float> buildBoundary(HashSet<Float> degreeOfInterests) {
-		float min = getMinDOI(degreeOfInterests);
-		float max = getMaxDOI(degreeOfInterests);
-		LinkedList<Float> boundary = new LinkedList<>();
+	private LinkedList<Double> buildBoundary(HashSet<Float> degreeOfInterests) {
+		double min = Math.log(getMinDOI(degreeOfInterests));
+		double max = Math.log(getMaxDOI(degreeOfInterests));
+		LinkedList<Double> boundary = new LinkedList<>();
 		if (min < max) {
 			if (this.useLogCategory || this.useLogCategoryWithConfig) {
 				// The DOI boundaries should be built as if the "treat CONFIG as
 				// a log category" was selected. This will produce a boundaries
 				// table that includes the levels FINEST, FINER, FINE, INFO,
 				// WARNING, and SEVERE #185.
-				float interval = (max - min) / 6;
+				double interval = (max - min) / 6;
 				IntStream.range(0, 7).forEach(i -> boundary.add(min + i * interval));
 
 				if (this.useLogCategory) {
@@ -322,7 +323,7 @@ public class LogAnalyzer extends ASTVisitor {
 					LOGGER.info(() -> "New boundaries are: " + boundary);
 				}
 			} else {
-				float interval = (max - min) / 7;
+				double interval = (max - min) / 7;
 				IntStream.range(0, 8).forEach(i -> boundary.add(min + i * interval));
 			}
 			return boundary;

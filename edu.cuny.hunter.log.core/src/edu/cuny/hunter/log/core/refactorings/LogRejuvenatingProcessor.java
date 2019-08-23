@@ -64,7 +64,7 @@ public class LogRejuvenatingProcessor extends RefactoringProcessor {
 	/**
 	 * Boundary for DOI values of enclosing methods
 	 */
-	private LinkedList<Float> boundary;
+	private LinkedList<Double> boundary;
 
 	/**
 	 * Treat CONFIG as category
@@ -355,7 +355,7 @@ public class LogRejuvenatingProcessor extends RefactoringProcessor {
 		return this.javaProjects;
 	}
 
-	public LinkedList<Float> getBoundary() {
+	public LinkedList<Double> getBoundary() {
 		return this.boundary;
 	}
 

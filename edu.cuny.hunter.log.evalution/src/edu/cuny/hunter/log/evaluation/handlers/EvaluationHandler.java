@@ -285,7 +285,7 @@ public class EvaluationHandler extends AbstractHandler {
 										logInvocation.getNewLogLevel());
 							}
 
-							LinkedList<Float> boundary = logRejuvenatingProcessor.getBoundary();
+							LinkedList<Double> boundary = logRejuvenatingProcessor.getBoundary();
 							if (boundary != null && boundary.size() > 0)
 								if (this.isUseLogCategory()) {
 									this.printBoundaryLogCategory(sequence, project.getElementName(), boundary,
@@ -495,7 +495,7 @@ public class EvaluationHandler extends AbstractHandler {
 		return System.currentTimeMillis();
 	}
 
-	private void printBoundaryLogCategory(long sequence, String subject, LinkedList<Float> boundary,
+	private void printBoundaryLogCategory(long sequence, String subject, LinkedList<Double> boundary,
 			CSVPrinter doiPrinter) throws IOException {
 		doiPrinter.printRecord(sequence, subject, boundary.get(0), boundary.get(1), Level.FINEST);
 		doiPrinter.printRecord(sequence, subject, boundary.get(1), boundary.get(2), Level.FINER);
@@ -503,14 +503,14 @@ public class EvaluationHandler extends AbstractHandler {
 		doiPrinter.printRecord(sequence, subject, boundary.get(3), boundary.get(4), Level.INFO);
 	}
 
-	private void printBoundaryWithConfig(long sequence, String subject, LinkedList<Float> boundary,
+	private void printBoundaryWithConfig(long sequence, String subject, LinkedList<Double> boundary,
 			CSVPrinter doiPrinter) throws IOException {
 		this.printBoundaryLogCategory(sequence, subject, boundary, doiPrinter);
 		doiPrinter.printRecord(sequence, subject, boundary.get(4), boundary.get(5), Level.WARNING);
 		doiPrinter.printRecord(sequence, subject, boundary.get(5), boundary.get(6), Level.SEVERE);
 	}
 
-	private void printBoundaryDefault(long sequence, String subject, LinkedList<Float> boundary, CSVPrinter doiPrinter)
+	private void printBoundaryDefault(long sequence, String subject, LinkedList<Double> boundary, CSVPrinter doiPrinter)
 			throws IOException {
 		doiPrinter.printRecord(sequence, subject, boundary.get(0), boundary.get(1), Level.FINEST);
 		doiPrinter.printRecord(sequence, subject, boundary.get(1), boundary.get(2), Level.FINER);
